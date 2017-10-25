@@ -1,0 +1,4 @@
+sklearn
+numpy
+fastgp
+deap
