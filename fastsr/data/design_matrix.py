@@ -29,7 +29,7 @@ class DesignMatrix:
     def from_headed_csv(self, csv_file):
         self.dat = numpy.nan_to_num(numpy.genfromtxt(csv_file, dtype=numpy.float, delimiter=',', names=True,
                                     deletechars="""~!@#$%^&-=~\|]}[{';: /?.>,<"""))
-        self.variable_names = self.dat.dtype.names[:-1]
+        self.variable_names = list(self.dat.dtype.names[:-1])
         self.dat = self.dat.view((numpy.float, len(self.dat.dtype.names)))
         self.set_predictors_and_response()
 

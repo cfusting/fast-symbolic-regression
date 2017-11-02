@@ -106,6 +106,11 @@ class SymbolicRegression(BaseEstimator):
         self.population_, self.logbook_, self.history_ = toolbox.run()
         self.best_individuals_ = self.experiment_.get_best_individuals(self.population_)
         self.best_individuals_.sort(key=lambda x: x.error)
+        if self.ensemble_size > len(self.best_individuals_):
+            print('Warning: enemble_size (' + str(self.ensemble_size) + ') larger than the length '
+                  'of best_individuals (' + str(len(self.best_individuals_)) + '). Lowering ensemble'
+                  'size to match the length of best_individuals.')
+            self.ensemble_size = len(self.best_individuals_)
         return self
 
     def predict(self, X):
@@ -127,16 +132,16 @@ class SymbolicRegression(BaseEstimator):
             raise ValueError('Cannot score model with a different number of features than with what the model was '
                              'fit.')
         scoring_toolbox = self.experiment_.get_scoring_toolbox(X, y, self.pset_)
-        scores = np.zeros(len(self.best_individuals_))
-        for i, ind in enumerate(self.best_individuals_):
-            scores[i] = scoring_toolbox.score(ind)[0]
-        return scores.min()
+        scores = np.zeros(self.ensemble_size)
+        for i in range(self.ensemble_size):
+            scores[i] = scoring_toolbox.score(self.best_individuals_[i])[0]
+        return scores.mean()
 
     def save(self, filename):
-        with open(filename + '_parameters', 'wb') as f:
+        with open(filename + '_parameters.pkl', 'wb') as f:
             parameters = self.get_params(),
             pickle.dump(parameters, f)
-        with open(filename, 'wb') as f:
+        with open(filename + '.pkl', 'wb') as f:
             objects = {'population': self.population_,
                        'logbook': self.logbook_,
                        'history': self.history_,
@@ -144,7 +149,7 @@ class SymbolicRegression(BaseEstimator):
             pickle.dump(objects, f)
 
     def load(self, filename):
-        with open(filename + '_parameters', 'rb') as f:
+        with open(filename + '_parameters.pkl', 'rb') as f:
             parameters = pickle.load(f)
         self.set_params(**parameters[0])
         random.seed(self.seed)
@@ -172,7 +177,7 @@ class SymbolicRegression(BaseEstimator):
         fake_response = np.zeros((1, 1))
         self.experiment_.get_toolbox(fake_features, fake_response, self.pset_, self.variable_type_indices,
                                      self.variable_names)
-        with open(filename, 'rb') as f:
+        with open(filename + '.pkl', 'rb') as f:
             objects = pickle.load(f)
         self.population_ = objects['population']
         self.logbook_ = objects['logbook']
