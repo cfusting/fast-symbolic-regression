@@ -3,7 +3,7 @@ import pickle
 
 from sklearn.base import BaseEstimator
 
-import fastsr.data.learning_data as ld
+import fastsr.containers.learning_data as ld
 from fastsr.experiments.control import Control
 
 import numpy as np

@@ -1,3 +1,4 @@
+import math
 import operator
 import random
 from functools import partial
@@ -6,14 +7,12 @@ import cachetools
 import numpy
 from deap import creator, base, tools, gp
 
-import math
-
-from fastgp.algorithms import afpo, operators, subset_selection, archive
-from fastgp.experiments import reports, fast_evaluate, symbreg
+from fastgp.algorithms import afpo, fast_evaluate
+from fastgp.logging import archive, reports
 from fastgp.parametrized import simple_parametrized_terminals as sp
-
+from fastgp.utilities import operators, symbreg, subset_selection, metrics
 from fastsr.experiments import abstract_experiment
-from fastsr.utils import utils
+from fastsr.utilities import utils
 
 NAME = 'Control'
 
@@ -39,7 +38,7 @@ class Control(abstract_experiment.Experiment):
                  max_gen_grow=6,
                  subset_proportion=1,
                  subset_change_frequency=10,
-                 error_function=fast_evaluate.mean_squared_error,
+                 error_function=metrics.mean_squared_error,
                  num_randoms=1):
 
         super(Control, self).__init__()

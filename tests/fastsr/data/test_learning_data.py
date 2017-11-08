@@ -1,4 +1,4 @@
-import fastsr.data.learning_data as ld
+import fastsr.containers.learning_data as ld
 
 
 class TestLearningData:
