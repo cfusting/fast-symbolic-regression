@@ -2,7 +2,7 @@ import ntpath
 import os
 import re
 from functools import partial
-import utilities
+import fastsr.utilities
 
 import h5py
 

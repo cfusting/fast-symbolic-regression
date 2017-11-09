@@ -28,8 +28,8 @@ class SymbolicRegression(BaseEstimator):
                  variable_names=None,
                  variable_dict=None,
                  num_features=None,
-                 ngen=2,
-                 pop_size=10,
+                 ngen=20,
+                 pop_size=50,
                  tournament_size=2,
                  min_depth_init=1,
                  max_dept_init=6,
@@ -73,12 +73,14 @@ class SymbolicRegression(BaseEstimator):
         self.num_features = X.shape[1]
         self.experiment_class = Control
         self.variable_type_indices = [self.num_features - 1]
-        self.variable_names = ['x' + str(x) for x in range(self.num_features)]
+        self.variable_names = ['X' + str(x) for x in range(self.num_features)]
         self.variable_dict = ld.get_variable_dict(self.variable_names, ld.LearningData.DEFAULT_PREFIX)
 
     def fit(self, X, y):
         check_data(X)
         check_data(y)
+        # We require a vector for the response
+        y = y.reshape(X.shape[0])
         if self.experiment_class is None:
             self.initialize_defaults(X)
         random.seed(self.seed)
@@ -183,3 +185,9 @@ class SymbolicRegression(BaseEstimator):
         self.logbook_ = objects['logbook']
         self.history_ = objects['history']
         self.best_individuals_ = objects['best_individuals']
+
+    def print_best_individuals(self):
+        if self.best_individuals_ is None:
+            raise RuntimeError('Cannot print best individuals. Model has not yet been fit!')
+        for ind in self.best_individuals_:
+            print(str(ind.error) + ' : ' + str(ind))
