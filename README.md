@@ -27,7 +27,7 @@ Score: 0.0
 Whoa! That's not much error. Don't get too used to scores like that though, real data sets aren't usually as simple as a third order polynomial.
 
 fastsr uses Genetic Programming to fit the data. That means equations are evolving to fit the data better and better each generation. Let's have a look at the best individuals and their respective scores.
-```pyton
+```python
 print('Best Individuals:')
 sr.print_best_individuals()
 ```
