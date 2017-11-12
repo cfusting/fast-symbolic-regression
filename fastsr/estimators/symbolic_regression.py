@@ -20,6 +20,29 @@ def check_data(dat):
         raise ValueError('Bad data: Non finite values.')
 
 
+def reshape_y(why):
+    if len(why.shape) > 1:
+        return why.reshape(len(why))
+    return why
+
+
+def reshape_X(ex):
+    if len(ex.shape) < 2:
+        return ex.reshape((len(ex), 1))
+    return ex
+
+
+def reshape_dat(ex, why):
+    return reshape_X(ex), reshape_y(why)
+
+
+def init_dat(ex, why):
+    check_data(ex)
+    check_data(why)
+    ex, why = reshape_dat(ex, why)
+    return ex, why
+
+
 class SymbolicRegression(BaseEstimator):
 
     def __init__(self,
@@ -77,10 +100,7 @@ class SymbolicRegression(BaseEstimator):
         self.variable_dict = ld.get_variable_dict(self.variable_names, ld.LearningData.DEFAULT_PREFIX)
 
     def fit(self, X, y):
-        check_data(X)
-        check_data(y)
-        # We require a vector for the response
-        y = y.reshape(X.shape[0])
+        X, y = init_dat(X, y)
         if self.experiment_class is None:
             self.initialize_defaults(X)
         random.seed(self.seed)
@@ -117,6 +137,7 @@ class SymbolicRegression(BaseEstimator):
 
     def predict(self, X):
         check_data(X)
+        X = reshape_X(X)
         if self.num_features != X.shape[1]:
             raise ValueError('Cannot make predictions with a different number of features than with what the model was '
                              'fit.')
@@ -128,8 +149,7 @@ class SymbolicRegression(BaseEstimator):
         return predictions.mean(axis=1)
 
     def score(self, X, y):
-        check_data(X)
-        check_data(y)
+        X, y = init_dat(X, y)
         if self.num_features != X.shape[1]:
             raise ValueError('Cannot score model with a different number of features than with what the model was '
                              'fit.')

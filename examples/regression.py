@@ -8,7 +8,6 @@ def target(x):
 
 X = np.linspace(-10, 10, 100, endpoint=True)
 y = target(X)
-X = X.reshape((len(X), 1))
 
 sr = SymbolicRegression()
 sr.fit(X, y)
