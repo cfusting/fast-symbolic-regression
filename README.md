@@ -12,9 +12,9 @@ def target(x):
 ```
 Now we'll generate some data on the domain \[-10, 10\].
 ```python
-X = np.arange(-10, 10, .25)
+X = np.linspace(-10, 10, 100, endpoint=True)
+y = target(X)
 X = X.reshape((len(X), 1))
-y = np.apply_along_axis(target, 0, X).reshape(len(X))
 ```
 Finally we'll create and fit the Symbolic Regression estimator and check the score.
 ```python
