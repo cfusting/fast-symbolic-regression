@@ -5,7 +5,17 @@ fastsr estimators adhere to the [sklearn](http://scikit-learn.org/stable/) estim
 
 Example Usage<a name="ex"></a>
 ------------------------------
-[Symbolic Regression](https://en.wikipedia.org/wiki/Symbolic_regression) is really good at fitting nonlinear functions. Let's try to fit the third order polynomial x^3 + x^2 + x.
+[Symbolic Regression](https://en.wikipedia.org/wiki/Symbolic_regression) is really good at fitting nonlinear functions. Let's try to fit the third order polynomial x^3 + x^2 + x. This is the "regression" example from the examples folder.
+```python
+import matplotlib.pyplot as plt
+
+import numpy as np
+
+from fastsr.estimators.symbolic_regression import SymbolicRegression
+
+from fastgp.algorithms.fast_evaluate import fast_numpy_evaluate
+from fastgp.parametrized.simple_parametrized_terminals import get_node_semantics
+```
 ```python
 def target(x):
     return x**3 + x**2 + x
@@ -14,11 +24,11 @@ Now we'll generate some data on the domain \[-10, 10\].
 ```python
 X = np.linspace(-10, 10, 100, endpoint=True)
 y = target(X)
-X = X.reshape((len(X), 1))
 ```
 Finally we'll create and fit the Symbolic Regression estimator and check the score.
 ```python
-sr = SymbolicRegression()
+seed = 72066
+sr = SymbolicRegression(seed=seed)
 sr.fit(X, y)
 score = sr.score(X, y)
 ```
@@ -34,23 +44,64 @@ sr.print_best_individuals()
 ```
 ```
 Best Individuals:
-0.0 : add(add(square(X0), X0), cube(X0))
-33.34375 : add(square(X0), cube(X0))
-2000.127354695976 : add(cbrt(X0), cbrt(cube(cube(X0))))
-2002.083203125 : add(X0, cbrt(cube(cube(X0))))
-2002.083203125 : add(cube(X0), X0)
-2010.426953125 : cube(X0)
-71748.56942173702 : exp(multiply(numpy_protected_log_abs(X0), numpy_protected_sqrt(X0)))
-134846.70314941407 : add(X0, add(X0, X0))
-138725.83830566407 : add(X0, X0)
-138725.83830566407 : add(X0, cbrt(cube(X0)))
-140572.96838378906 : add(square(numpy_protected_sqrt(X0)), numpy_protected_log_abs(exp(X0)))
-142671.66096191405 : X0
-145678.76900113834 : cbrt(X0)
-146593.42518662894 : numpy_protected_sqrt(numpy_protected_log_abs(cube(X0)))
-8.648831663174305e+40 : square(exp(cube(numpy_protected_sqrt(exp(cbrt(X0))))))
+0.0 : add(add(square(X0), cube(X0)), X0)
+34.006734006733936 : add(square(X0), cube(X0))
+2081.346746380927 : add(cube(X0), X0)
+2115.3534803876605 : cube(X0)
+137605.24466869785 : add(add(X0, add(X0, X0)), add(X0, X0))
+141529.89102341252 : add(add(X0, X0), add(X0, X0))
+145522.55084614072 : add(add(X0, X0), X0)
+149583.22413688237 : add(X0, X0)
+151203.96034032793 : numpy_protected_sqrt(cube(numpy_protected_log_abs(exp(X0))))
+151203.96034032793 : cube(numpy_protected_sqrt(X0))
+153711.91089563753 : numpy_protected_log_abs(exp(X0))
+153711.91089563753 : X0
+155827.26437602515 : square(X0)
+156037.81673350732 : add(numpy_protected_sqrt(X0), cbrt(X0))
+157192.02956807753 : numpy_protected_sqrt(exp(cbrt(X0)))
 ```
 At the top we find our best individual, which is exactly the third order polynomial we defined our target function to be. You might be confused as to why we consider all these other individuals, some with very large errors be be "best".
+We can look through the history object to see some of the equations that led up to our winning model by ordering by error.
+```python
+history = sr.history_
+population = list(filter(lambda x: hasattr(x, 'error'), list(sr.history_.genealogy_history.values())))
+population.sort(key=lambda x: x.error, reverse=True)
+```
+Let's get a sample of the unique solutions. There are quite a few so the print statements have been omitted.
+```python
+X = X.reshape((len(X), 1))
+i = 1
+previous_errror = population[0]
+unique_individuals = []
+while i < len(population):
+    ind = population[i]
+    if ind.error != previous_errror:
+        print(str(i) + ' | ' + str(ind.error) + ' | ' + str(ind))
+        unique_individuals.append(ind)
+    previous_errror = ind.error
+    i += 1
+
+```
+Now we can plot the equations over the target functions.
+```python
+def plot(index):
+    plt.plot(X, y, 'r')
+    plt.axis([-10, 10, -1000, 1000])
+    y_hat = fast_numpy_evaluate(unique_individuals[index], sr.pset_.context, X, get_node_semantics)
+    plt.plot(X, y_hat, 'g')
+    plt.savefig(str(i) + 'ind.png')
+    plt.gcf().clear()
+
+i = 0
+while i < len(unique_individuals):
+    plot(i)
+    i += 10
+i = len(unique_individuals) - 1
+plot(i)
+```
+If you want to be really slick you can stitch them together into a gif!
+
+![Convergence Gif](docs/converge.gif)
 
 Fitness Age Size Complexity Pareto Optimization
 -----------------------------------------------
