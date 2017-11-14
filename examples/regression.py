@@ -14,8 +14,7 @@ def target(x):
 X = np.linspace(-10, 10, 100, endpoint=True)
 y = target(X)
 
-seed = 72066
-sr = SymbolicRegression(seed=seed)
+sr = SymbolicRegression(seed=72066)
 sr.fit(X, y)
 score = sr.score(X, y)
 print('Score: ' + str(score))

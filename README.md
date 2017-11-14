@@ -27,8 +27,7 @@ y = target(X)
 ```
 Finally we'll create and fit the Symbolic Regression estimator and check the score.
 ```python
-seed = 72066
-sr = SymbolicRegression(seed=seed)
+sr = SymbolicRegression(seed=72066)
 sr.fit(X, y)
 score = sr.score(X, y)
 ```
