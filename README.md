@@ -99,7 +99,7 @@ while i < len(unique_individuals):
 i = len(unique_individuals) - 1
 plot(i)
 ```
-If you want to be really slick you can stitch them together into a gif!
+Stitched together into a gif we get a view into the evolutionary process.
 
 ![Convergence Gif](docs/converge.gif)
 
