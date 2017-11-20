@@ -79,9 +79,11 @@ class Control(abstract_experiment.Experiment):
         toolbox.register("select", tools.selRandom)
         toolbox.register("koza_node_selector", operators.internally_biased_node_selector,
                          bias=self.internal_node_selection_bias)
+        self.history = tools.History()
         toolbox.register("mate", operators.one_point_xover_biased, node_selector=toolbox.koza_node_selector)
         toolbox.decorate("mate", operators.static_limit(key=operator.attrgetter("height"), max_value=self.max_height))
         toolbox.decorate("mate", operators.static_limit(key=len, max_value=self.max_size))
+        toolbox.decorate("mate", self.history.decorator)
         toolbox.register("grow", sp.generate_parametrized_expression,
                          partial(gp.genGrow, pset=pset, min_=self.min_gen_grow, max_=self.max_gen_grow),
                          variable_type_indices, variable_names)
@@ -89,6 +91,13 @@ class Control(abstract_experiment.Experiment):
                          node_selector=toolbox.koza_node_selector)
         toolbox.decorate("mutate", operators.static_limit(key=operator.attrgetter("height"), max_value=self.max_height))
         toolbox.decorate("mutate", operators.static_limit(key=len, max_value=self.max_size))
+        toolbox.decorate("mutate", self.history.decorator)
+
+        def generate_randoms(individuals):
+            return individuals
+        toolbox.register("generate_randoms", generate_randoms,
+                         individuals=[toolbox.individual() for i in range(self.num_randoms)])
+        toolbox.decorate("generate_randoms", self.history.decorator)
         toolbox.register("error_func", self.error_function)
         expression_dict = cachetools.LRUCache(maxsize=1000)
         subset_selection_archive = subset_selection.RandomSubsetSelectionArchive(frequency=self.subset_change_frequency,
@@ -115,7 +124,8 @@ class Control(abstract_experiment.Experiment):
         toolbox.register("run", afpo.pareto_optimization, population=self.pop, toolbox=toolbox,
                          xover_prob=self.xover_prob, mut_prob=self.mut_prob, ngen=self.ngen,
                          tournament_size=self.tournament_size,  num_randoms=self.num_randoms, stats=self.mstats,
-                         archive=self.multi_archive, calc_pareto_front=False, verbose=False, reevaluate_population=True)
+                         archive=self.multi_archive, calc_pareto_front=False, verbose=False, reevaluate_population=True,
+                         history=self.history)
         toolbox.register("save", reports.save_log_to_csv)
         toolbox.decorate("save", reports.save_archive(self.multi_archive))
         return toolbox
