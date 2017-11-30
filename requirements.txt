@@ -3,3 +3,4 @@ cachetools
 deap
 numpy
 scikit_learn
+fastgp
