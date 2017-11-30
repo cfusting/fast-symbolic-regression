@@ -2,7 +2,8 @@ import ntpath
 import os
 import re
 from functools import partial
-import ml.utilities.utils as utilities
+
+import numpy as np
 
 import h5py
 
@@ -108,9 +109,9 @@ class LearningData:
 
     def lag_predictors(self, lag, every=1, column_names=None):
         def get_matrix_and_names(indices):
-            cols = utilities.generate_lagged_column_names(self.variable_names, lag, every,
-                                                          indices)
-            dt = utilities.generate_lagged_matrix(self.design_matrix.dat, lag, every, indices)
+            cols = generate_lagged_column_names(self.variable_names, lag, every,
+                                                indices)
+            dt = generate_lagged_matrix(self.design_matrix.dat, lag, every, indices)
             return cols, dt
         if column_names is None:
             idx = [x for x in range(len(self.variable_names) - 1)]
@@ -168,3 +169,64 @@ def get_unique_variable_prefixes(variable_names):
     """
     prefixes = list(set(list(map(partial(get_prefix), variable_names))))
     return prefixes
+
+
+def lag_vector(vector, lag, every):
+    row_num = vector.shape[0] - lag * every
+    mat = np.zeros((row_num, lag + 1))
+    mat[:, lag] = vector[:row_num]
+    for l in range(lag - 1, -1, -1):
+        current_vector = vector[every:]
+        mat[:, l] = current_vector[:row_num]
+        vector = current_vector
+    return mat
+
+
+def generate_lagged_matrix(dat, lag, every=1, columnn_indices=None):
+    """
+    For each variable in dat create a matrix of observations x timesteps and concatenate them
+    column wise.
+    :param dat:
+    :param lag:
+    :param every:
+    :param columnn_indices:
+    :return:
+    """
+    n, k = dat.shape
+    row_num = n - lag * every
+    if columnn_indices is None or len(columnn_indices) == 0:
+        new_dat = np.zeros((row_num, k * lag + k))
+        d = 0
+        for j in range(k):
+            mat = lag_vector(dat[:, j], lag, every)
+            new_dat[:, d:d + lag + 1] = mat
+            d += lag + 1
+    else:
+        new_dat = np.zeros((row_num, k - len(columnn_indices) + len(columnn_indices) * (lag + 1)))
+        d = 0
+        for j in range(k):
+            if j in columnn_indices:
+                mat = lag_vector(dat[:, j], lag, every)
+                new_dat[:, d:d + lag + 1] = mat
+                d += lag + 1
+            else:
+                new_dat[:, d] = dat[:row_num, j]
+                d += 1
+
+    return new_dat
+
+
+def generate_lagged_column_names(column_names, lag, every=1, column_indices=None):
+    new_names = []
+    if column_indices is None or len(column_indices) == 0:
+        for col in column_names:
+            for t in range(0, lag + 1, every):
+                new_names.append(col + 'tdlta' + str(t))
+    else:
+        for i, col in enumerate(column_names):
+            if i in column_indices:
+                for t in range(0, lag + 1, every):
+                    new_names.append(col + 'tdlta' + str(t))
+            else:
+                new_names.append(col)
+    return new_names

@@ -3,6 +3,15 @@
 fastsr is a symbolic regression package built on top of [fastgp](https://github.com/cfusting/fastgp), a numpy implementation of [genetic programming](https://en.wikipedia.org/wiki/Genetic_programming) built on top of [deap](https://github.com/DEAP/deap).
 fastsr estimators adhere to the [sklearn](http://scikit-learn.org/stable/) estimator interface and can thus be used in pipelines.
 
+fastsr was designed and developed by the [Morphology, Evolution & Cognition Laboratory](http://www.meclab.org/) at the University of Vermont. It extends research code which can be found [here](https://github.com/mszubert/gecco_2016).
+
+Installation
+------------
+fastsr is compatible with Python 2.7+.
+```bash
+pip install fastsr
+```
+
 Example Usage<a name="ex"></a>
 ------------------------------
 [Symbolic Regression](https://en.wikipedia.org/wiki/Symbolic_regression) is really good at fitting nonlinear functions. Let's try to fit the third order polynomial x^3 + x^2 + x. This is the "regression" example from the examples folder.
