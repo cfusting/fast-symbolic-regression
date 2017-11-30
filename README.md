@@ -1,4 +1,4 @@
-# Blazing Fast Symbolic Regression
+# Fast Symbolic Regression
 
 fastsr is a symbolic regression package built on top of [fastgp](https://github.com/cfusting/fastgp), a numpy implementation of [genetic programming](https://en.wikipedia.org/wiki/Genetic_programming) built on top of [deap](https://github.com/DEAP/deap).
 fastsr estimators adhere to the [sklearn](http://scikit-learn.org/stable/) estimator interface and can thus be used in pipelines.
