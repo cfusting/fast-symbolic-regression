@@ -1,7 +1,8 @@
 # Fast Symbolic Regression
 
-fastsr is a symbolic regression package built on top of [fastgp](https://github.com/cfusting/fastgp), a numpy implementation of [genetic programming](https://en.wikipedia.org/wiki/Genetic_programming) built on top of [deap](https://github.com/DEAP/deap).
-fastsr estimators adhere to the [sklearn](http://scikit-learn.org/stable/) estimator interface and can thus be used in pipelines.
+Symbolic Regression is a non-linear, non-parametric Machine Learning method capable of modeling complex data sets. fastsr aims at providing the most simple, powerful models possible by optimizing not only for error but also for model complexity.
+fastsr is built on top of [fastgp](https://github.com/cfusting/fastgp), a numpy implementation of [genetic programming](https://en.wikipedia.org/wiki/Genetic_programming) built on top of [deap](https://github.com/DEAP/deap).
+All estimators adhere to the [sklearn](http://scikit-learn.org/stable/) estimator interface and can thus be used in pipelines.
 
 fastsr was designed and developed by the [Morphology, Evolution & Cognition Laboratory](http://www.meclab.org/) at the University of Vermont. It extends research code which can be found [here](https://github.com/mszubert/gecco_2016).
 
