@@ -27,5 +27,3 @@ class Experiment:
     def get_pset(self, num_predictors, variable_type_indices, variable_names, variable_dict):
         pass
 
-
-

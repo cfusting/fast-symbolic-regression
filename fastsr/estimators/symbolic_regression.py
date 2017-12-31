@@ -311,7 +311,7 @@ class SymbolicRegression(BaseEstimator):
         """Save this model for later use.
         """
 
-        # Need to find a better workaround so this can be pickled directly. Maybe __set_state__.
+        # This is a messy workaround that can probably be solved via Pickle details.
         with open(filename + '_parameters.pkl', 'wb') as f:
             parameters = self.get_params(),
             pickle.dump(parameters, f)
