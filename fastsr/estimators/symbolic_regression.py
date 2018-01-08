@@ -4,7 +4,7 @@ import pickle
 from sklearn.base import BaseEstimator
 
 import fastsr.containers.learning_data as ld
-from fastsr.experiments.control import Control
+from fastsr.experiments.afpo_complexity import AfpoComplexity
 
 import numpy as np
 
@@ -204,7 +204,7 @@ class SymbolicRegression(BaseEstimator):
 
     def initialize_defaults(self, X):
         self.num_features = X.shape[1]
-        self.experiment_class = Control
+        self.experiment_class = AfpoComplexity
         self.variable_type_indices = [self.num_features - 1]
         self.variable_names = ['X' + str(x) for x in range(self.num_features)]
         self.variable_dict = ld.get_variable_dict(self.variable_names, ld.LearningData.DEFAULT_PREFIX)
@@ -325,7 +325,8 @@ class SymbolicRegression(BaseEstimator):
     def load(self, filename):
         """Load a model.
         """
-        with open(filename + '_parameters.pkl', 'rb') as f:
+        # Assumes a .pkl suffix. If this isn't included we have bigger fish to fry.
+        with open(filename[0:-4] + '_parameters.pkl', 'rb') as f:
             parameters = pickle.load(f)
         self.set_params(**parameters[0])
         random.seed(self.seed)
@@ -353,7 +354,7 @@ class SymbolicRegression(BaseEstimator):
         fake_response = np.zeros((1, 1))
         self.experiment_.get_toolbox(fake_features, fake_response, self.pset_, self.variable_type_indices,
                                      self.variable_names)
-        with open(filename + '.pkl', 'rb') as f:
+        with open(filename, 'rb') as f:
             objects = pickle.load(f)
         self.population_ = objects['population']
         self.logbook_ = objects['logbook']
