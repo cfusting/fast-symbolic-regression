@@ -1,4 +1,5 @@
 import numpy
+from sklearn.preprocessing import normalize
 
 import h5py
 
@@ -55,3 +56,7 @@ class DesignMatrix:
 
     def generate_simple_variable_names(self):
         self.variable_names = ['X' + str(x) for x in range(0, self.predictors.shape[1])]
+
+    def normalize(self):
+        self.dat = normalize(self.dat)
+        self.set_predictors_and_response()

@@ -125,6 +125,11 @@ class LearningData:
         self.design_matrix.from_data(dat, column_names)
         self.init_common()
 
+    def normalize(self):
+        self.design_matrix.normalize()
+        self.predictors = self.design_matrix.predictors
+        self.response = self.design_matrix.response
+
 
 def get_prefix(name):
         if LearningData.TIME_DELTA not in name:

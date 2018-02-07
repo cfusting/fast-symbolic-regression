@@ -80,8 +80,8 @@ class TruncationElite:
                          node_selector=operators.uniform_depth_node_selector)
         toolbox.decorate("mutate", operators.static_limit(key=operator.attrgetter("height"), max_value=self.max_height))
         toolbox.decorate("mutate", operators.static_limit(key=len, max_value=self.max_size))
-        self.history = tools.History()
-        toolbox.decorate("mutate", self.history.decorator)
+        # self.history = tools.History()
+        # toolbox.decorate("mutate", self.history.decorator)
         toolbox.register("error_func", self.error_function)
         expression_dict = cachetools.LRUCache(maxsize=1000)
         subset_selection_archive = subset_selection.RandomSubsetSelectionArchive(frequency=self.subset_change_frequency,
@@ -106,7 +106,8 @@ class TruncationElite:
         self.pop = toolbox.population(n=self.pop_size)
         toolbox.register("run", truncation_with_elite.optimize, population=self.pop, toolbox=toolbox,
                          ngen=self.ngen, stats=self.mstats, archive=self.multi_archive, verbose=False,
-                         history=self.history)
+                         history=None)
+                         # history=self.history)
         toolbox.register("save", reports.save_log_to_csv)
         toolbox.decorate("save", reports.save_archive(self.multi_archive))
         return toolbox
