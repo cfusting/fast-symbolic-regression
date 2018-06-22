@@ -206,8 +206,10 @@ class SymbolicRegression(BaseEstimator):
         self.num_features = X.shape[1]
         self.experiment_class = AfpoComplexity
         self.variable_type_indices = [self.num_features - 1]
-        self.variable_names = ['X' + str(x) for x in range(self.num_features)]
-        self.variable_dict = ld.get_variable_dict(self.variable_names, ld.LearningData.DEFAULT_PREFIX)
+        if self.variable_names is None:
+            self.variable_names = ['X' + str(x) for x in range(self.num_features)]
+        if self.variable_dict is None:
+            self.variable_dict = ld.get_variable_dict(self.variable_names, ld.LearningData.DEFAULT_PREFIX)
 
     def fit(self, X, y):
         """
