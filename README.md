@@ -25,6 +25,8 @@ from fastsr.estimators.symbolic_regression import SymbolicRegression
 
 from fastgp.algorithms.fast_evaluate import fast_numpy_evaluate
 from fastgp.parametrized.simple_parametrized_terminals import get_node_semantics
+
+from sklearn.model_selection import train_test_split
 ```
 ```python
 def target(x):
@@ -34,12 +36,14 @@ Now we'll generate some data on the domain \[-10, 10\].
 ```python
 X = np.linspace(-10, 10, 100, endpoint=True)
 y = target(X)
+X_train, X_test, y_train, y_test = train_test_split(X, y)
 ```
 Finally we'll create and fit the Symbolic Regression estimator and check the score.
 ```python
-sr = SymbolicRegression(seed=72066)
-sr.fit(X, y)
-score = sr.score(X, y)
+sr = SymbolicRegression(ngen=100, pop_size=100)
+sr.fit(X_train, y_train)
+score = sr.score(X_test, y_test)
+print('Score: {}'.format(score))
 ```
 ```
 Score: 0.0
