@@ -40,7 +40,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y)
 ```
 Finally we'll create and fit the Symbolic Regression estimator and check the score.
 ```python
-sr = SymbolicRegression(ngen=100, pop_size=100)
+sr = SymbolicRegression(ngen=100, pop_size=100, stop_time=60)
 sr.fit(X_train, y_train)
 score = sr.score(X_test, y_test)
 print('Score: {}'.format(score))
