@@ -39,7 +39,8 @@ class AfpoComplexity(abstract_experiment.Experiment):
                  subset_proportion=1,
                  subset_change_frequency=10,
                  error_function=metrics.mean_squared_error,
-                 num_randoms=1):
+                 num_randoms=1,
+                 stop_time=None):
 
         super(AfpoComplexity, self).__init__()
         self.ngen = ngen
@@ -63,6 +64,7 @@ class AfpoComplexity(abstract_experiment.Experiment):
         self.multi_archive = None
         self.pop = None
         self.mstats = None
+        self.stop_time = stop_time
 
     def get_toolbox(self, predictors, response, pset, variable_type_indices, variable_names):
         subset_size = int(math.floor(predictors.shape[0] * self.subset_proportion))
@@ -125,7 +127,7 @@ class AfpoComplexity(abstract_experiment.Experiment):
                          xover_prob=self.xover_prob, mut_prob=self.mut_prob, ngen=self.ngen,
                          tournament_size=self.tournament_size,  num_randoms=self.num_randoms, stats=self.mstats,
                          archive=self.multi_archive, calc_pareto_front=False, verbose=False, reevaluate_population=True,
-                         history=self.history)
+                         history=self.history, stop_time=self.stop_time)
         toolbox.register("save", reports.save_log_to_csv)
         toolbox.decorate("save", reports.save_archive(self.multi_archive))
         return toolbox

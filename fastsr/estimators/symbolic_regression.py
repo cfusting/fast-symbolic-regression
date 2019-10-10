@@ -115,6 +115,10 @@ class SymbolicRegression(BaseEstimator):
         Number of lowest error individuals from best_individuals_ to use
         when making predictions and scoring the model.
 
+    stop_time : None or integer
+        Maximum number of seconds to run the optimization; return current
+        optimum after that.
+
     Attributes
     ----------
     population_ : list
@@ -177,7 +181,8 @@ class SymbolicRegression(BaseEstimator):
                  subset_change_frequency=10,
                  num_randoms=1,
                  seed=np.random.randint(10**6),
-                 ensemble_size=1):
+                 ensemble_size=1,
+                 stop_time=None):
 
         self.experiment_class = experiment_class
         self.num_features = num_features
@@ -201,6 +206,7 @@ class SymbolicRegression(BaseEstimator):
         self.num_randoms = num_randoms
         self.ensemble_size = ensemble_size
         self.seed = seed
+        self.stop_time = stop_time
 
     def initialize_defaults(self, X):
         self.num_features = X.shape[1]
@@ -244,7 +250,8 @@ class SymbolicRegression(BaseEstimator):
                                                  max_gen_grow=self.max_gen_grow,
                                                  subset_proportion=self.subset_proportion,
                                                  subset_change_frequency=self.subset_change_frequency,
-                                                 num_randoms=self.num_randoms)
+                                                 num_randoms=self.num_randoms,
+                                                 stop_time=self.stop_time)
         if not hasattr(self, 'pset_'):
             self.pset_ = self.experiment_.get_pset(X.shape[1], self.variable_type_indices, self.variable_names,
                                                    self.variable_dict)
@@ -347,7 +354,8 @@ class SymbolicRegression(BaseEstimator):
                                                  max_gen_grow=self.max_gen_grow,
                                                  subset_proportion=self.subset_proportion,
                                                  subset_change_frequency=self.subset_change_frequency,
-                                                 num_randoms=self.num_randoms)
+                                                 num_randoms=self.num_randoms,
+                                                 stop_time=self.stop_time)
         self.pset_ = self.experiment_.get_pset(self.num_features, self.variable_type_indices, self.variable_names,
                                                self.variable_dict)
         # Create a temporary 'Fake' toolbox such that creator gets initialized with what it needs to create the
